@@ -9,13 +9,8 @@ var imgCorredor="assets/img/imgCorredor.jpg";     /* corredor */
 var imgEstac="assets/img/imgEstac.jpg";        /* estacionamento */
 var imgPendrive="assets/img/imgPendrive.png";      /* pendrive com fundo transparente */
 
-/* ===== Envio para o Google Sheets =====
-   Ao juntar com o arquivo principal, use a SHEETS_URL, jogador e setor de lá.
-   Aqui fica vazio de propósito para não enviar dados durante testes. */
-var SHEETS_URL="";
-var jogador="",setor="";
-function sheetsAtivo(){return SHEETS_URL.indexOf("https://")===0}
-function postar(d){return fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)})}
+/* ===== Envio para o Google Sheets: ver js/eg-dados.js ===== */
+var jogador=EG.d.nome,setor=EG.d.setor;
 
 /* ===== TEXTOS E CENAS (edite aqui) =====
    seta: x e y em % da imagem; rot = direção da seta (0 = direita, -90 = frente/cima, 180 = esquerda) */
@@ -99,8 +94,7 @@ $("e3Ok").addEventListener("click",function(){$("erro3").classList.remove("on")}
 function enviarM3(){
   if(m3.enviado)return;m3.enviado=true;
   var er=m3.erros,d={nome:jogador,setor:setor,modulo:"Módulo 3: Dispositivos perdidos",acertos:Math.max(0,1-er),erros:er,pontos:Math.max(0,10-5*er),selo:"Dispositivo Seguro",quedas:er,escolhas:m3.escolhas.join(">"),dataHora:new Date().toISOString()};
-  if(!sheetsAtivo()){console.warn("Google Sheets não configurado. Resultado:",d);return}
-  postar(d).catch(function(){});
+  EG.concluir("3");enviarDados(d);
 }
 $("m3Done").addEventListener("click",function(){
   enviarM3();var er=m3.erros;

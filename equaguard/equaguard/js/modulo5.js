@@ -6,10 +6,8 @@ var ICS={escudo:'<svg viewBox="0 0 24 24" width="84" height="84" fill="none" str
 /* imagem do escritório (do index) */
 var fundo="assets/img/fundo.jpg";
 
-/* ===== Envio para o Google Sheets (vazio nos testes; use a URL do arquivo principal ao juntar) ===== */
-var SHEETS_URL="",jogador="",setor="";
-function sheetsAtivo(){return SHEETS_URL.indexOf("https://")===0}
-function postar(d){return fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)})}
+/* ===== Envio para o Google Sheets: ver js/eg-dados.js ===== */
+var jogador=EG.d.nome,setor=EG.d.setor;
 
 /* ===== TEXTOS (edite aqui) ===== */
 var EMPRESA="Uniformax"; /* nome fictício do fornecedor: troque aqui */
@@ -245,8 +243,7 @@ function enviar(){
   if(enviado)return;enviado=true;
   var e1=a1.erros,e2=a2.erros,er=e1+e2,
   d={nome:jogador,setor:setor,modulo:"Módulo 5: Armadilhas digitais",acertos:Math.max(0,1-e1)+Math.max(0,1-e2),erros:er,pontos:Math.max(0,10-5*e1)+Math.max(0,10-5*e2),selo:"Alerta Digital",quedas:er,escolhas:a1.escolhas.join(">")+"|"+a2.escolhas.join(">"),dataHora:new Date().toISOString()};
-  if(!sheetsAtivo()){console.warn("Google Sheets não configurado. Resultado:",d);return}
-  postar(d).catch(function(){});
+  EG.concluir("5");enviarDados(d);
 }
 $("s2Done").addEventListener("click",function(){
   enviar();var er=a1.erros+a2.erros;$("selo5").innerHTML=ICS.escudo;

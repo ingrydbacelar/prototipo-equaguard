@@ -10,10 +10,8 @@ var imgFoto="assets/img/imgFoto.jpg"; /* foto do primeiro dia: crachá e sala de
 /* imagem do escritório (do index) */
 var fundo="assets/img/fundo.jpg";
 
-/* ===== Envio para o Google Sheets (vazio nos testes; use a URL do arquivo principal ao juntar) ===== */
-var SHEETS_URL="",jogador="",setor="";
-function sheetsAtivo(){return SHEETS_URL.indexOf("https://")===0}
-function postar(d){return fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)})}
+/* ===== Envio para o Google Sheets: ver js/eg-dados.js ===== */
+var jogador=EG.d.nome,setor=EG.d.setor;
 
 /* ===== TEXTOS (edite aqui) ===== */
 var M4={
@@ -172,8 +170,7 @@ function enviar(){
   if(m4.enviado)return;m4.enviado=true;
   var e1=m4.erros,e2=m5.erros,er=e1+e2,
   d={nome:jogador,setor:setor,modulo:"Módulo 4: O perigo de compartilhar informações",acertos:Math.max(0,1-e1)+Math.max(0,1-e2),erros:er,pontos:Math.max(0,10-5*e1)+Math.max(0,10-5*e2),selo:"Post Seguro",quedas:er,escolhas:m4.escolhas.join(">")+"|"+m5.escolhas.join(">"),dataHora:new Date().toISOString()};
-  if(!sheetsAtivo()){console.warn("Google Sheets não configurado. Resultado:",d);return}
-  postar(d).catch(function(){});
+  EG.concluir("4");enviarDados(d);
 }
 $("m3Done").addEventListener("click",iniciar5);
 $("m5Done").addEventListener("click",function(){

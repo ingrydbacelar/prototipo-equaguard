@@ -9,10 +9,8 @@ var imgEquipe="assets/img/imgEquipe.jpg"; /* colega com o notebook, na subestaç
 var imgSub="assets/img/imgSub.jpg";       /* colaborador com notebook na subestação */
 var imgPainel="assets/img/imgPainel.jpg"; /* painel elétrico com adesivo de QR Code */
 
-/* ===== Envio para o Google Sheets (vazio nos testes; use a URL do arquivo principal ao juntar) ===== */
-var SHEETS_URL="",jogador="",setor="";
-function sheetsAtivo(){return SHEETS_URL.indexOf("https://")===0}
-function postar(d){return fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)})}
+/* ===== Envio para o Google Sheets: ver js/eg-dados.js ===== */
+var jogador=EG.d.nome,setor=EG.d.setor;
 
 /* ===== SITUAÇÕES (edite aqui) =====
    pergunta, opcoes (k = chave), erros (só as erradas), certo, fim (lição), modulo/selo (planilha) */
@@ -238,8 +236,8 @@ function enviar(){
   if(m3.enviado)return;m3.enviado=true;var s=SIT[cur],er=m3.erros;
   var d={nome:jogador,setor:setor,modulo:s.modulo,acertos:Math.max(0,1-er),erros:er,pontos:Math.max(0,10-5*er),selo:s.selo,quedas:er,escolhas:m3.escolhas.join(">"),dataHora:new Date().toISOString()};
   res[cur]=er;
-  if(!sheetsAtivo()){console.warn("Google Sheets não configurado. Resultado:",d);return}
-  postar(d).catch(function(){});
+  if(cur===SIT.length-1)EG.concluir("3t");
+  enviarDados(d);
 }
 $("m3Done").addEventListener("click",function(){
   enviar();

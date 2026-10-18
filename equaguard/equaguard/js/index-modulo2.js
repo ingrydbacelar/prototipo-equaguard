@@ -3,8 +3,19 @@ var colegaImg="assets/img/colegaImg.webp";
 var mod1Done=false,mod2Done=false,m2={erros:0,errL:false,errA:false,escolhas:[],enviado:false};
 function embaralha(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
 function atualizaModulos(){
-  if(mod1Done){var c=$("mod2");c.disabled=false;c.classList.remove("lock");c.classList.add("on");c.removeAttribute("aria-disabled");$("ms2").textContent=mod2Done?"Concluído":"Disponível";document.querySelector("#mod1 .ms").textContent="Concluído"}
+  var f=function(n){return EG.feito(n)};
+  mod1Done=mod1Done||f("1");mod2Done=mod2Done||f("2");
+  var livre={mod1:true,mod2:mod1Done,mod3:mod2Done,mod3t:mod2Done,mod4:f("3")||f("3t"),mod5:f("4")};
+  var feito={mod1:mod1Done,mod2:mod2Done,mod3:f("3"),mod3t:f("3t"),mod4:f("4"),mod5:f("5")};
+  Object.keys(livre).forEach(function(id){
+    if(!livre[id])return;
+    var c=$(id);c.disabled=false;c.classList.remove("lock");c.classList.add("on");c.removeAttribute("aria-disabled");
+    c.querySelector(".ms").textContent=feito[id]?"Concluído":"Disponível";
+  });
 }
+[["mod3","modulo3.html"],["mod3t","modulo3-tecnico.html"],["mod4","modulo4.html"],["mod5","modulo5.html"]].forEach(function(p){
+  $(p[0]).addEventListener("click",function(){if(!this.disabled)location.href=p[1]});
+});
 $("rProx").addEventListener("click",function(){tela("modulos")});
 $("mod2").addEventListener("click",function(){if(!$("mod2").disabled)tela("licao2")});
 $("stage2").style.backgroundImage="url("+fundo+")";
@@ -73,11 +84,10 @@ $("hot2").addEventListener("click",function(){
 function enviarM2(){
   if(m2.enviado)return;m2.enviado=true;
   var er=m2.erros,d={nome:jogador,setor:setor,modulo:"Módulo 2: Senhas e posto de trabalho",acertos:Math.max(0,2-er),erros:er,pontos:Math.max(0,20-10*er),selo:"Posto Seguro",quedas:er,escolhas:m2.escolhas.join(">"),dataHora:new Date().toISOString()};
-  if(!sheetsAtivo()){console.warn("Google Sheets não configurado. Resultado:",d);return}
-  postar(d).then(reenviarFila).catch(function(){gravarFila(lerFila().concat([d]))});
+  enviarDados(d);
 }
 $("m2Done").addEventListener("click",function(){
-  mod2Done=true;atualizaModulos();enviarM2();
+  mod2Done=true;EG.concluir("2");atualizaModulos();enviarM2();
   var er=m2.erros;
   $("selo2").innerHTML=ICS.escudo;
   $("r2Pts").textContent=Math.max(0,20-10*er)+" de 20 pontos";
@@ -86,3 +96,6 @@ $("m2Done").addEventListener("click",function(){
 });
 $("r2Mod").addEventListener("click",function(){tela("modulos")});
 $("r2Ini").addEventListener("click",function(){tela("inicio")});
+
+/* volta dos módulos 3 a 5: reabre a tela de escolha de módulo */
+if(/[?&]modulos=1/.test(location.search)&&EG.d.id){jogador=EG.d.nome;setor=EG.d.setor;$("mod3t").hidden=EG.d.perfil!=="Técnico de campo";atualizaModulos();tela("modulos")}

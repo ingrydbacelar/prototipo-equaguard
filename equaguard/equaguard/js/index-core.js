@@ -47,13 +47,13 @@ $("identOk").addEventListener("click",function(){
   var n=$("nomeJog").value.trim().replace(/\s+/g," "),s=$("setorJog").value.trim().replace(/\s+/g," ");
   if(n.length<2){$("nomeErr").textContent="Digite um nome ou apelido para continuar.";$("nomeJog").focus();return}
   if(s.length<2){$("nomeErr").textContent="Selecione a sua área para continuar.";$("setorJog").focus();return}
-  jogador=n;setor=s;$("nomeErr").textContent="";tela("equipe");
+  jogador=n;setor=s;EG.novoJogador(n,s);$("nomeErr").textContent="";tela("equipe");
 });
 ["nomeJog","setorJog"].forEach(function(id){$(id).addEventListener("keydown",function(e){if(e.key==="Enter")$("identOk").click()})});
 $("voltar").addEventListener("click",function(){tela("inicio")});
 $("fechar").addEventListener("click",fechar);
 $("seguir").addEventListener("click",function(){
-  var p=pessoas[atual];
+  var p=pessoas[atual];EG.salvarPerfil(p.cargo);
   $("modal").classList.remove("on");
   $("pAv").src=p.foto;$("pAv").alt="Foto de "+p.nome;
   $("pTitulo").textContent="Você é "+p.nome+" ("+p.cargo+")";
@@ -91,30 +91,14 @@ var AVISO_EXT="AVISO: este e-mail foi originado de fora do Grupo Equatorial. Nã
 emails.forEach(function(e){e.ext=e.end.slice(-DOM.length-1)!=="@"+DOM;if(e.ext&&e.fish)e.pistas.push("O aviso de e-mail externo estava no topo.")});
 var resp={},pontos=0,bonus=0,reportado={},aberto=-1,quedas=0,enviado=false,jogador="",setor="";
 
-/* ===== Envio para o Google Sheets (via Google Apps Script) ===== */
-var SHEETS_URL="https://script.google.com/macros/s/AKfycbxU1JujEMX-i6r7u2xvE8rk92w_rczVPrZyw7oeXa7LoZneg2cUIrYasw2Hv4du7qz0Kg/exec"; /* termina em /exec */
-var FILA="equaguard_fila";
-function lerFila(){try{return JSON.parse(localStorage.getItem(FILA)||"[]")}catch(e){return[]}}
-function gravarFila(f){try{localStorage.setItem(FILA,JSON.stringify(f))}catch(e){}}
-function sheetsAtivo(){return SHEETS_URL.indexOf("https://")===0}
-function postar(d){
-  return fetch(SHEETS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)});
-}
-function reenviarFila(){
-  if(!sheetsAtivo())return;
-  var f=lerFila();if(!f.length)return;
-  gravarFila([]);
-  f.forEach(function(d){postar(d).catch(function(){gravarFila(lerFila().concat([d]))})});
-}
+/* ===== Envio para o Google Sheets: ver js/eg-dados.js ===== */
 function enviarResultado(selo){
   if(enviado)return;enviado=true;
   var ac=0,pa=0;emails.forEach(function(e,i){if((resp[i]==="sus")===e.fish)ac++;else if(resp[i]==="sus"&&!e.fish)pa++});
   var d={nome:jogador,setor:setor,modulo:"Módulo 1: Phishing e Engenharia Social",
     acertos:ac,parciais:pa,erros:emails.length-ac-pa,pontos:pontos+bonus,selo:selo,quedas:quedas,reportouQueda:Object.keys(reportado).length,engSocial:(socialFeito?"Confirmou pelo contato salvo":"Não realizado"),engSocialPrimeira:soEsc[0]||"",engSocialEscolhas:soEsc.join(">"),dataHora:new Date().toISOString()};
-  if(!sheetsAtivo()){console.warn("Google Sheets não configurado. Resultado:",d);return}
-  postar(d).then(reenviarFila).catch(function(){gravarFila(lerFila().concat([d]))});
+  enviarDados(d);
 }
-window.addEventListener("load",reenviarFila);
 function meuEmail(){var n=pessoas[atual].nome.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();return n+"@"+DOM}
 function renderLista(){
   $("mlist").innerHTML=emails.map(function(e,i){
@@ -159,7 +143,7 @@ $("mread").addEventListener("mouseover",function(ev){var a=ev.target.closest("a[
 $("mread").addEventListener("mouseout",function(ev){if(ev.target.closest("a[data-u]"))$("mstat").textContent="Passe o mouse ou toque em um link para ver o endereço."});
 var SV='<svg viewBox="0 0 24 24" width="84" height="84" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
 var ICS={escudo:SV+'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>',lupa:SV+'<circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg>',bussola:SV+'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>'};
-function mostrarRes(){mod1Done=true;atualizaModulos();
+function mostrarRes(){mod1Done=true;EG.concluir("1");atualizaModulos();
   var max=emails.length*10,s,ic,tx;
   if(pontos>=50){s="Caçador de Phishing";ic=ICS.escudo;tx="Você enxerga os sinais com clareza. Os golpes do Hacker Apagão não passam por você."}
   else if(pontos>=30){s="Olhar Atento";ic=ICS.lupa;tx="Você já percebe boa parte das armadilhas. Revise os e-mails para fechar as pistas que faltaram."}
