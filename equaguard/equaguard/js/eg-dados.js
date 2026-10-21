@@ -36,7 +36,17 @@ function reenviarFila(){
   gravarFila([]);
   f.forEach(function(d){postar(d).catch(function(){gravarFila(lerFila().concat([d]))})});
 }
+/* cópia local dos resultados, lida pelo Painel-Seguranca.html (mesma chave) */
+var PAINEL_KEY="equaguard_static_resultados_v1";
+function salvarLocal(r){
+  try{
+    var l=JSON.parse(localStorage.getItem(PAINEL_KEY)||"[]");if(!Array.isArray(l))l=[];
+    l.push({dataHora:r.dataHora||new Date().toISOString(),jogadorId:EG.d.id||"",nome:r.nome||EG.d.nome,setor:r.setor||EG.d.setor,perfil:EG.d.perfil||"",modulo:r.modulo,acertos:r.acertos,parciais:r.parciais||0,erros:r.erros,tentativasErradas:r.quedas||0,pontos:r.pontos,escolhas:r.escolhas||r.engSocialEscolhas||""});
+    localStorage.setItem(PAINEL_KEY,JSON.stringify(l.slice(-2000)));
+  }catch(e){}
+}
 function enviarDados(r){
+  salvarLocal(r);
   /* só o essencial: quando, quem, área, módulo e acertos/erros */
   var d={dataHora:r.dataHora||new Date().toISOString(),nome:r.nome||EG.d.nome,setor:r.setor||EG.d.setor,modulo:r.modulo,acertos:r.acertos,erros:r.erros};
   if(!sheetsAtivo()){console.warn("Google Sheets não configurado. Resultado:",d);return}

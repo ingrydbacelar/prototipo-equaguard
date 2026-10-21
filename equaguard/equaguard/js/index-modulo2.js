@@ -5,7 +5,9 @@ function embaralha(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor
 function atualizaModulos(){
   var f=function(n){return EG.feito(n)};
   mod1Done=mod1Done||f("1");mod2Done=mod2Done||f("2");
-  var livre={mod1:true,mod2:mod1Done,mod3:mod2Done,mod3t:mod2Done,mod4:f("3")||f("3t"),mod5:f("4")};
+  var tec=EG.d.perfil==="Técnico de campo";
+  $("mod3").hidden=false;$("mod3t").hidden=!tec;
+  var livre={mod1:true,mod2:mod1Done,mod3:mod2Done,mod3t:mod2Done&&tec,mod4:f("3")&&(!tec||f("3t")),mod5:f("4")};
   var feito={mod1:mod1Done,mod2:mod2Done,mod3:f("3"),mod3t:f("3t"),mod4:f("4"),mod5:f("5")};
   Object.keys(livre).forEach(function(id){
     if(!livre[id])return;
@@ -98,4 +100,4 @@ $("r2Mod").addEventListener("click",function(){tela("modulos")});
 $("r2Ini").addEventListener("click",function(){tela("inicio")});
 
 /* volta dos módulos 3 a 5: reabre a tela de escolha de módulo */
-if(/[?&]modulos=1/.test(location.search)&&EG.d.id){jogador=EG.d.nome;setor=EG.d.setor;$("mod3t").hidden=EG.d.perfil!=="Técnico de campo";atualizaModulos();tela("modulos")}
+if(/[?&]modulos=1/.test(location.search)&&EG.d.id){jogador=EG.d.nome;setor=EG.d.setor;atualizaModulos();tela("modulos")}

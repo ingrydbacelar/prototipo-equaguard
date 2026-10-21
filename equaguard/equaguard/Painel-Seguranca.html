@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8"/>
+        <meta content="width=device-width,initial-scale=1" name="viewport"/>
+        <title>
+            EquaGuard | Painel de Segurança
+        </title>
+        <!-- Estilos do painel -->
+    <style>
+        /* 1. Cores e estilos globais */
+        :root {
+            color-scheme: dark;
+            --bg: #101c2b;
+            --panel: #213750;
+            --line: #3a5878;
+            --text: #eef1f5;
+            --muted: #a9b8c9;
+            --accent: #f5c242;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at top, #1b2d44, var(--bg) 70%);
+            color: var(--text);
+            font-family: system-ui, sans-serif;
+            line-height: 1.55;
+        }
+
+        /* 2. Estrutura e cabeçalho */
+        main {
+            max-width: 1200px;
+            margin: auto;
+            padding: 32px 20px;
+        }
+
+        header, .filtros {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        h1, h2 {
+            font-family: 'Courier New', monospace;
+            font-weight: 400;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(1.7rem, 5vw, 2rem);
+        }
+
+        h2 {
+            margin-top: 32px;
+        }
+
+        .aviso {
+            padding: 16px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            color: var(--muted);
+        }
+
+        /* 3. Filtros e ações */
+        .filtros label {
+            display: grid;
+            gap: 6px;
+        }
+
+        select, input, button {
+            font: inherit;
+        }
+
+        select, input {
+            max-width: 100%;
+            padding: 10px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: var(--panel);
+            color: var(--text);
+        }
+
+        .btn {
+            min-height: 44px;
+            padding: 12px 20px;
+            border: 2px solid var(--line);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 3px;
+        }
+
+        /* 4. Indicadores */
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .kpis article {
+            padding: 20px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--panel);
+        }
+
+        .kpis strong {
+            display: block;
+            color: var(--accent);
+            font-size: 2rem;
+        }
+
+        /* 5. Tabelas e mensagens */
+        .tabela {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+        }
+
+        th, #estado {
+            color: var(--muted);
+        }
+
+        /* 6. Ajustes para celular */
+        @media (max-width: 600px) {
+            main {
+                padding: 24px 16px;
+            }
+
+            .filtros label, .filtros button {
+                width: 100%;
+            }
+
+            .kpis {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+    <body>
+        <main id="painel-seguranca">
+            <header>
+                <div>
+                    <p>
+                        EquaGuard / Segurança da Informação
+                    </p>
+                    <h1 id="titulo-painel" tabindex="-1">
+                        Painel de Segurança
+                    </h1>
+                </div>
+                <div>
+                    <a class="btn" href="index.html" style="display:inline-block;text-decoration:none">Voltar ao jogo</a>
+                </div>
+            </header>
+            <p class="aviso">
+                Painel sem login de usuário. Mostra os resultados da planilha do Google (todos os dispositivos), quando conectada com a chave de acesso, junto com os resultados salvos neste navegador. Sem a conexão, mostra só o histórico deste navegador. Limpar os dados do site apaga o histórico local.
+            </p>
+            <section aria-label="Filtros" class="filtros">
+                <label>
+                    Área
+                    <select id="area">
+                        <option value="">
+                            Todas as áreas
+                        </option>
+                    </select>
+                </label>
+                <label>
+                    Perfil
+                    <select id="perfil">
+                        <option value="">
+                            Todos os perfis
+                        </option>
+                    </select>
+                </label>
+                <label>
+                    A partir de
+                    <input id="desde" type="date"/>
+                </label>
+                <button class="btn sec" id="conectar-planilha" type="button">
+                    Conectar à planilha
+                </button>
+                <button class="btn sec" id="atualizar-painel" type="button">
+                    Atualizar
+                </button>
+                <button class="btn sec" id="exportar">
+                    Exportar CSV
+                </button>
+            </section>
+            <section aria-label="Indicadores" class="kpis">
+                <article>
+                    Participantes
+                    <strong id="participantes">
+                        0
+                    </strong>
+                </article>
+                <article>
+                    Resultados
+                    <strong id="resultados">
+                        0
+                    </strong>
+                </article>
+                <article>
+                    Acerto geral
+                    <strong id="acerto">
+                        —
+                    </strong>
+                </article>
+                <article>
+                    Trilhas concluídas
+                    <strong id="concluidos">
+                        0
+                    </strong>
+                </article>
+            </section>
+            <p id="estado" role="status">
+            </p>
+            <h2>
+                Onde reforçar o treinamento
+            </h2>
+            <p>
+                Considera o resultado mais recente de cada participante por módulo. A taxa inclui acertos parciais no denominador; erros de tentativa ficam no detalhamento.
+            </p>
+            <div class="tabela">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                Módulo
+                            </th>
+                            <th>
+                                Participantes
+                            </th>
+                            <th>
+                                Acerto
+                            </th>
+                            <th>
+                                Recomendação
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="modulos">
+                    </tbody>
+                </table>
+            </div>
+            <h2>
+                Detalhamento dos resultados
+            </h2>
+            <div class="tabela">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                Data
+                            </th>
+                            <th>
+                                Participante
+                            </th>
+                            <th>
+                                Área / Perfil
+                            </th>
+                            <th>
+                                Módulo
+                            </th>
+                            <th>
+                                Acertos / Erros
+                            </th>
+                            <th>
+                                Pontos
+                            </th>
+                            <th>
+                                Escolhas
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="linhas">
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        <!-- Dados locais, indicadores, filtros e exportação -->
+    <script>
+        (() => {
+            'use strict';
+
+            const STORAGE_KEY = 'equaguard_static_resultados_v1';
+            const elemento = (id) => document.getElementById(id);
+            const numero = (valor) => Math.max(0, Number(valor) || 0);
+            const identidade = (registro) => registro.jogadorId || `${registro.nome}|${registro.setor}`;
+            let registros = [];
+            let visiveis = [];
+
+            function adicionarLinha(destino, valores) {
+                const linha = document.createElement('tr');
+
+                valores.forEach((valor) => {
+                    const celula = document.createElement('td');
+                    celula.textContent = valor ?? '—';
+                    linha.appendChild(celula);
+                });
+
+                elemento(destino).appendChild(linha);
+            }
+
+            function atualizarFiltros() {
+                ['area', 'perfil'].forEach((id) => {
+                    const seletor = elemento(id);
+                    const selecionado = seletor.value;
+                    const campo = id === 'area' ? 'setor' : 'perfil';
+                    const valores = [...new Set(registros.map((item) => item[campo]).filter(Boolean))];
+
+                    while (seletor.options.length > 1) {
+                        seletor.remove(1);
+                    }
+
+                    valores.sort().forEach((valor) => {
+                        const opcao = document.createElement('option');
+                        opcao.value = valor;
+                        opcao.textContent = valor;
+                        seletor.appendChild(opcao);
+                    });
+
+                    seletor.value = valores.includes(selecionado) ? selecionado : '';
+                });
+            }
+
+            function trilhaCompleta(jogador) {
+                const modulos = [...jogador.modulos];
+                const possui = (prefixo) => modulos.some((nome) => nome.startsWith(prefixo));
+                const principais = [1, 2, 3, 4, 5].every((n) => possui(`Módulo ${n}:`));
+                const tecnicos = jogador.perfil !== 'Técnico de campo'
+                    || [2, 3, 4].every((n) => possui(`Módulo 3 – Parte ${n}:`));
+
+                return principais && tecnicos;
+            }
+
+            function renderizar() {
+                const ultimos = new Map();
+                const area = elemento('area').value;
+                const perfil = elemento('perfil').value;
+                const desde = elemento('desde').value;
+
+                // Seleciona o resultado cronologicamente mais recente por participante e módulo.
+                registros.forEach((registro) => {
+                    const chave = `${identidade(registro)}|${registro.modulo}`;
+                    const anterior = ultimos.get(chave);
+
+                    if (!anterior || new Date(registro.dataHora) >= new Date(anterior.dataHora)) {
+                        ultimos.set(chave, registro);
+                    }
+                });
+
+                visiveis = [...ultimos.values()].filter((registro) => (
+                    (!area || registro.setor === area)
+                    && (!perfil || registro.perfil === perfil)
+                    && (!desde || new Date(registro.dataHora) >= new Date(`${desde}T00:00:00`))
+                ));
+
+                const jogadores = new Map();
+                const modulos = new Map();
+                let acertos = 0;
+                let total = 0;
+
+                elemento('linhas').replaceChildren();
+                elemento('modulos').replaceChildren();
+
+                visiveis.forEach((registro) => {
+                    const id = identidade(registro);
+                    const certos = numero(registro.acertos);
+                    const erros = numero(registro.erros);
+                    const respostas = certos + erros + numero(registro.parciais);
+
+                    if (!jogadores.has(id)) {
+                        jogadores.set(id, { perfil: registro.perfil, modulos: new Set() });
+                    }
+
+                    jogadores.get(id).modulos.add(registro.modulo);
+
+                    if (!modulos.has(registro.modulo)) {
+                        modulos.set(registro.modulo, { participantes: 0, acertos: 0, total: 0 });
+                    }
+
+                    const modulo = modulos.get(registro.modulo);
+                    modulo.participantes += 1;
+                    modulo.acertos += certos;
+                    modulo.total += respostas;
+                    acertos += certos;
+                    total += respostas;
+
+                    const tentativas = registro.tentativasErradas
+                        ? ` · ${registro.tentativasErradas} tentativas erradas` : '';
+
+                    adicionarLinha('linhas', [
+                        new Date(registro.dataHora).toLocaleString('pt-BR'),
+                        registro.nome,
+                        `${registro.setor} / ${registro.perfil || 'Não informado'}`,
+                        registro.modulo,
+                        `${certos} / ${erros}${tentativas}`,
+                        registro.pontos,
+                        registro.escolhas || registro.engSocialEscolhas || '—'
+                    ]);
+                });
+
+                elemento('participantes').textContent = jogadores.size;
+                elemento('resultados').textContent = visiveis.length;
+                elemento('acerto').textContent = total ? `${Math.round(100 * acertos / total)}%` : '—';
+                elemento('concluidos').textContent = [...jogadores.values()].filter(trilhaCompleta).length;
+                elemento('estado').textContent = visiveis.length
+                    ? 'Atualizado com os resultados salvos neste navegador.'
+                    : 'Nenhum resultado encontrado. Conclua um módulo no mesmo endereço do jogo ou ajuste os filtros.';
+
+                modulos.forEach((modulo, nome) => {
+                    const taxa = modulo.total ? modulo.acertos / modulo.total : null;
+                    let recomendacao = 'Manter acompanhamento';
+
+                    if (modulo.participantes < 3) {
+                        recomendacao = 'Amostra insuficiente (mínimo 3)';
+                    } else if (taxa === null) {
+                        recomendacao = 'Sem respostas para avaliar';
+                    } else if (taxa < 0.7) {
+                        recomendacao = 'Priorizar reforço';
+                    } else if (taxa < 0.85) {
+                        recomendacao = 'Revisar pontos de atenção';
+                    }
+
+                    adicionarLinha('modulos', [
+                        nome,
+                        modulo.participantes,
+                        taxa === null ? '—' : `${Math.round(taxa * 100)}%`,
+                        recomendacao
+                    ]);
+                });
+            }
+
+            const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwwiiMbyPsUnF0-bMOi3iaglTiJXlX5LY-q4PcwLt3RkLhSTWhQyDtH7Att-3rk3JEFSA/exec';
+            const CHAVE_SESSAO = 'equaguard_painel_chave';
+            const lerLocal = () => {
+                const dados = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+                if (!Array.isArray(dados)) {
+                    throw new Error('O histórico local não contém uma lista de resultados.');
+                }
+
+                return dados;
+            };
+            // Aceita cabeçalhos da planilha com ou sem acento, maiúsculas ou espaços.
+            const normalizar = (linha) => {
+                const mapa = {};
+                Object.keys(linha).forEach((k) => {
+                    mapa[k.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, '')] = linha[k];
+                });
+                const pegar = (...nomes) => nomes.map((n) => mapa[n]).find((v) => v !== undefined && v !== '');
+
+                return {
+                    dataHora: pegar('datahora', 'data'),
+                    jogadorId: pegar('jogadorid', 'id'),
+                    nome: pegar('nome', 'apelido'),
+                    setor: pegar('setor', 'area'),
+                    perfil: pegar('perfil'),
+                    modulo: pegar('modulo'),
+                    acertos: pegar('acertos'),
+                    parciais: pegar('parciais'),
+                    erros: pegar('erros'),
+                    tentativasErradas: pegar('tentativaserradas', 'quedas'),
+                    pontos: pegar('pontos'),
+                    escolhas: pegar('escolhas')
+                };
+            };
+
+            async function lerPlanilha() {
+                const chave = sessionStorage.getItem(CHAVE_SESSAO);
+
+                if (!chave) {
+                    return { registros: [], aviso: 'Planilha não conectada. Clique em "Conectar à planilha".' };
+                }
+
+                const resposta = await fetch(`${SHEETS_URL}?acao=listar&chave=${encodeURIComponent(chave)}`);
+                const json = await resposta.json();
+
+                if (!json.ok) {
+                    sessionStorage.removeItem(CHAVE_SESSAO);
+                    throw new Error(json.erro || 'A planilha recusou a chave de acesso.');
+                }
+
+                return { registros: json.registros.map(normalizar), aviso: '' };
+            }
+
+            async function carregar() {
+                let local = [];
+                let remoto = [];
+                let aviso = '';
+
+                try {
+                    local = lerLocal();
+                } catch (erro) {
+                    aviso = `Não foi possível ler o histórico local. ${erro.message}`;
+                }
+
+                try {
+                    const planilha = await lerPlanilha();
+                    remoto = planilha.registros;
+                    aviso = aviso || planilha.aviso;
+                } catch (erro) {
+                    aviso = `Não foi possível ler a planilha. ${erro.message}`;
+                }
+
+                // Junta planilha e histórico local, sem duplicar o mesmo resultado.
+                const vistos = new Set();
+                registros = [...remoto, ...local].filter((item) => {
+                    if (!item || typeof item.modulo !== 'string') {
+                        return false;
+                    }
+
+                    const chaveRegistro = `${item.dataHora}|${item.nome}|${item.modulo}`;
+
+                    if (vistos.has(chaveRegistro)) {
+                        return false;
+                    }
+
+                    vistos.add(chaveRegistro);
+                    return true;
+                });
+
+                atualizarFiltros();
+                renderizar();
+
+                if (aviso) {
+                    elemento('estado').textContent = aviso;
+                }
+            }
+
+            function conectarPlanilha() {
+                const chave = window.prompt('Digite a chave de acesso da planilha (definida no Apps Script):');
+
+                if (chave) {
+                    sessionStorage.setItem(CHAVE_SESSAO, chave.trim());
+                    carregar();
+                }
+            }
+
+            function exportarCSV() {
+                const campos = [
+                    'dataHora', 'jogadorId', 'nome', 'setor', 'perfil', 'modulo',
+                    'acertos', 'parciais', 'erros', 'tentativasErradas', 'pontos', 'escolhas'
+                ];
+                const escapar = (valor) => {
+                    let texto = String(valor ?? '');
+
+                    // Evita que planilhas interpretem o conteúdo como uma fórmula.
+                    if (/^[=+@\-\t\r]/.test(texto)) {
+                        texto = `'${texto}`;
+                    }
+
+                    return `"${texto.replace(/"/g, '""')}"`;
+                };
+                const linhas = [campos.map(escapar).join(';')];
+
+                visiveis.forEach((registro) => {
+                    linhas.push(campos.map((campo) => escapar(registro[campo])).join(';'));
+                });
+
+                const arquivo = new Blob(['\ufeff' + linhas.join('\r\n')], {
+                    type: 'text/csv;charset=utf-8'
+                });
+                const url = URL.createObjectURL(arquivo);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'equaguard-seguranca.csv';
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }
+
+            ['area', 'perfil', 'desde'].forEach((id) => {
+                elemento(id).addEventListener('change', renderizar);
+            });
+
+            elemento('atualizar-painel').addEventListener('click', carregar);
+            elemento('exportar').addEventListener('click', exportarCSV);
+            elemento('conectar-planilha').addEventListener('click', conectarPlanilha);
+            window.addEventListener('storage', carregar);
+            carregar();
+        })();
+    </script>
+</body>
+</html>
