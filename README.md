@@ -6,10 +6,10 @@
   />
 </p>
 
+<h2 align="center"><em>EquaGuard</em></h2>
+
 <p align="center">
-  <a href="https://git.io/typing-svg">
-    <img src="https://readme-typing-svg.demolab.com?font=Arial&size=32&pause=1000&color=FFD700&center=true&vCenter=true&width=400&lines=EquaGuard" alt="EquaGuard" />
-  </a>
+  <img src="https://img.shields.io/badge/🏆_Solução_vencedora_do_2º_lugar_do_Hackathon_Equatorial-FFD700?style=for-the-badge&labelColor=FFD700&color=FFD700" />
 </p>
 
 ## Minha participação no 1º Hackathon da Equatorial
@@ -28,9 +28,15 @@ Por meio de um game em primeira pessoa inspirado no conceito de *escape room*, o
 
 A proposta é incentivar o reconhecimento de riscos digitais, a reflexão sobre as próprias decisões e a adoção de comportamentos mais seguros, mostrando como a tecnologia e a gamificação podem contribuir para o fortalecimento da cultura de segurança.
 
+
+<h2 align="center"><em>Quer conhecer o jogo?</em></h2>
+<p align="center">
+  Explore o protótipo do EquaGuard e descubra como funciona!
+</p>
+
 <p align="center">
   <a href="https://prototipoequaguard.netlify.app/">
-    <img src="https://img.shields.io/badge/🔗%20Acesse%20aqui-0B1F3A?style=for-the-badge" alt="🔗 Acesse aqui" />
+    <img src="https://img.shields.io/badge/▶_JOGAR_AGORA-0B1F3A?style=for-the-badge&labelColor=0B1F3A&color=0B1F3A" alt="Jogar agora" />
   </a>
 </p>
 
