@@ -1,7 +1,7 @@
 <p align="center">
   <img
     src="https://github.com/user-attachments/assets/8fd636dd-99fe-4436-85dd-235564432899"
-    alt="EquaGuard — Pitch Hackathon Equatorial, Desafio 2"
+    alt="Solução vencedora do 2º lugar do Hackathon Equatorial"
     width="100%"
   />
 </p>
@@ -28,8 +28,16 @@ Por meio de um game em primeira pessoa inspirado no conceito de *escape room*, o
 
 A proposta é incentivar o reconhecimento de riscos digitais, a reflexão sobre as próprias decisões e a adoção de comportamentos mais seguros, mostrando como a tecnologia e a gamificação podem contribuir para o fortalecimento da cultura de segurança.
 
-
 <h2 align="center"><em>Quer conhecer o jogo?</em></h2>
+
+<p align="center">
+  <img
+    src="https://github.com/user-attachments/assets/ee925222-5fbf-4b9b-b63e-8196127f6215"
+    alt="EquaGuard"
+    width="100%"
+  />
+</p>
+
 <p align="center">
   Explore o protótipo do EquaGuard e descubra como funciona!
 </p>
