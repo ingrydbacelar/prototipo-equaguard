@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/🏆_Solução_vencedora_do_2º_lugar_do_Hackathon_Equatorial-FFD700?style=for-the-badge&labelColor=FFD700&color=FFD700" />
 </p>
 
-## Minha participação no 1º Hackathon da Equatorial
+## Minha participação
 
 Tive a alegria de ser selecionada, entre 206 inscritos, para participar do **1º Hackathon da Equatorial**, representando a área de **Dados/IA**. Durante essa jornada, integrei a equipe **EquaGuard**, contribuindo para o desenvolvimento de uma solução voltada à **Segurança Digital**.
 
@@ -20,7 +20,7 @@ Tive a alegria de ser selecionada, entre 206 inscritos, para participar do **1º
 
 Um **Hackathon** é uma maratona de inovação e tecnologia que reúne pessoas com diferentes habilidades para colaborar, compartilhar conhecimentos e desenvolver soluções criativas para desafios reais em um período limitado. A iniciativa estimula o trabalho em equipe, a criatividade e a resolução de problemas, transformando ideias em projetos com potencial de gerar impacto.
 
-## Sobre o projeto EquaGuard
+## Sobre a solução
 
 O **EquaGuard** nasceu do desafio de Segurança Digital proposto no Hackathon, com a missão de tornar a conscientização sobre segurança da informação mais interativa, acessível e envolvente.
 
